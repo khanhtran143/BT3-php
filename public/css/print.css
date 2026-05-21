@@ -1,0 +1,196 @@
+body {
+  margin: 0;
+  font-family: Roboto, Inter, "Segoe UI", Arial, sans-serif;
+  color: #223045;
+  background: #eef2f7;
+}
+
+.print-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.print-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.print-eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9a5b55;
+}
+
+.print-header h1 {
+  margin: 0;
+  font-family: Cambria, "Palatino Linotype", serif;
+}
+
+.print-subtitle {
+  margin: 10px 0 0;
+  color: #5e6c84;
+}
+
+.print-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.print-actions button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  background: #8e1c24;
+}
+
+.print-note,
+.summary-strip,
+.print-grid,
+.print-list {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(111, 130, 158, 0.18);
+}
+
+.print-note {
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  color: #596a82;
+}
+
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.summary-card {
+  padding: 14px;
+  border-radius: 14px;
+  background: #f6f8fb;
+}
+
+.summary-card p {
+  margin: 0;
+  color: #617087;
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.5rem;
+  color: #8e1c24;
+}
+
+.print-grid {
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.schedule-table th,
+.schedule-table td {
+  border: 1px solid rgba(111, 130, 158, 0.18);
+  padding: 10px;
+  vertical-align: top;
+}
+
+.schedule-table th {
+  text-align: center;
+  background: #f7eaea;
+}
+
+.schedule-table .time-col {
+  width: 120px;
+  font-weight: 700;
+  color: #8e1c24;
+  background: #fbf1f1;
+}
+
+.cell-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.mini-booking {
+  padding: 10px;
+  border-radius: 12px;
+  background: #e8f0ff;
+  border-left: 4px solid #5d86dd;
+}
+
+.mini-booking h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  color: #244887;
+}
+
+.mini-booking p {
+  margin: 4px 0;
+  font-size: 0.86rem;
+}
+
+.print-list {
+  padding: 18px;
+}
+
+.print-list h2 {
+  margin-top: 0;
+  font-family: Cambria, "Palatino Linotype", serif;
+}
+
+.print-list-item {
+  padding: 12px 0;
+  border-top: 1px solid rgba(111, 130, 158, 0.16);
+}
+
+.print-list-item:first-of-type {
+  border-top: none;
+}
+
+.print-list-item h3 {
+  margin: 0 0 6px;
+}
+
+.print-list-item p {
+  margin: 4px 0;
+  color: #53627a;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .print-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-note,
+  .summary-strip,
+  .print-grid,
+  .print-list {
+    border: none;
+    border-radius: 0;
+  }
+}

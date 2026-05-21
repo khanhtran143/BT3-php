@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bảng quản trị - Quản lý lịch thực hành</title>
+    <link rel="stylesheet" href="/css/admin.css" />
+  </head>
+  <body>
+    <section class="admin-login" id="admin-login">
+      <form class="admin-login-card" id="admin-login-form">
+        <div class="brand">
+          <div class="brand-mark">PT</div>
+          <div>
+            <p class="brand-label">Bảng quản trị</p>
+            <h1>Quản lý lịch thực hành</h1>
+          </div>
+        </div>
+
+        <label>
+          Email admin
+          <input name="email" type="email" value="admin@ptit.edu.vn" required />
+        </label>
+        <label>
+          Mật khẩu
+          <input name="password" type="password" value="ptit123" required />
+        </label>
+
+        <button class="primary-button" type="submit">Đăng nhập admin</button>
+        <p class="message-box" id="admin-login-message" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <div class="admin-shell hidden" id="admin-shell">
+      <aside class="admin-sidebar">
+        <div class="brand">
+          <div class="brand-mark">PT</div>
+          <div>
+            <p class="brand-label">Bảng quản trị</p>
+            <h1>Lịch thực hành</h1>
+          </div>
+        </div>
+
+        <nav class="admin-menu" aria-label="Admin navigation">
+          <button class="menu-item active" data-view="dashboard" type="button">Tổng quan</button>
+          <button class="menu-item" data-view="teachers" type="button">Quản lý giảng viên</button>
+          <button class="menu-item" data-view="bookings" type="button">Quản lý lịch thực hành</button>
+          <button class="menu-item" data-view="rooms" type="button">Quản lý phòng học</button>
+          <button class="menu-item" data-view="subjects" type="button">Quản lý môn học</button>
+          <button class="menu-item" data-view="students" type="button">Quản lý sinh viên</button>
+          <button class="menu-item" data-view="reports" type="button">Thống kê / báo cáo</button>
+        </nav>
+      </aside>
+
+      <main class="admin-main">
+        <header class="admin-topbar">
+          <div>
+            <p class="eyebrow">Hệ thống quản trị</p>
+            <h2 id="page-title">Tổng quan</h2>
+          </div>
+
+          <div class="topbar-actions">
+            <button class="icon-button" id="theme-toggle" type="button" title="Chế độ tối">◐</button>
+            <button class="icon-button" type="button" title="Thông báo">●</button>
+            <div class="profile-pill">
+              <span class="profile-avatar" id="admin-avatar">AD</span>
+              <div>
+                <strong id="admin-name">Admin</strong>
+                <p id="admin-email">admin@ptit.edu.vn</p>
+              </div>
+            </div>
+            <button class="ghost-button" id="admin-logout" type="button">Đăng xuất</button>
+          </div>
+        </header>
+
+        <section class="view active" id="dashboard-view">
+          <div class="stats-grid" id="stats-grid"></div>
+
+          <section class="dashboard-grid">
+            <article class="panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-tag">Theo tuần</p>
+                  <h3>Số lịch theo ngày</h3>
+                </div>
+              </div>
+              <div class="bar-chart" id="schedule-chart"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-tag">Phòng lab</p>
+                  <h3>Tần suất sử dụng phòng</h3>
+                </div>
+              </div>
+              <div class="bar-chart" id="room-chart"></div>
+            </article>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <div>
+                <p class="section-tag">Gần đây</p>
+                <h3>Lịch thực hành mới cập nhật</h3>
+              </div>
+            </div>
+            <div class="table-shell compact">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ngày</th>
+                    <th>Giảng viên</th>
+                    <th>Môn học</th>
+                    <th>Phòng</th>
+                    <th>Thời gian</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-bookings"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="module-view">
+          <section class="panel">
+            <div class="module-header">
+              <div>
+                <p class="section-tag" id="module-tag">Quản lý</p>
+                <h3 id="module-title">Dữ liệu</h3>
+              </div>
+              <div class="module-actions">
+
+                <button class="primary-button" id="add-button" type="button">Thêm mới</button>
+              </div>
+            </div>
+
+            <div class="toolbar">
+
+              <div class="schedule-filters hidden" id="schedule-filters">
+                <label>
+                  Ngày
+                  <input id="filter-date" type="date" />
+                </label>
+                <label>
+                  Giảng viên
+                  <select id="filter-teacher"></select>
+                </label>
+                <label>
+                  Phòng
+                  <select id="filter-room"></select>
+                </label>
+                <button class="ghost-button" id="clear-filters" type="button">Xóa lọc</button>
+              </div>
+            </div>
+
+            <div class="table-shell">
+              <table>
+                <thead id="data-table-head"></thead>
+                <tbody id="data-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="pagination">
+              <p id="page-info">0 bản ghi</p>
+              <div>
+                <button class="ghost-button" id="prev-page" type="button">Trước</button>
+                <button class="ghost-button" id="next-page" type="button">Sau</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel calendar-panel hidden" id="calendar-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="section-tag">Lịch dạng tuần</p>
+                <h3>Kéo thả lịch theo ngày trong tuần</h3>
+              </div>
+            </div>
+            <div class="calendar-board" id="calendar-board"></div>
+          </section>
+        </section>
+
+        <section class="view" id="reports-view">
+          <section class="panel report-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="section-tag">Báo cáo</p>
+                <h3>Tổng quan vận hành</h3>
+              </div>
+            </div>
+            <div class="report-grid" id="report-grid"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="form-dialog" id="form-dialog">
+      <form method="dialog" class="modal-card" id="entity-form">
+        <div class="modal-header">
+          <div>
+            <p class="section-tag" id="modal-tag">Biểu mẫu</p>
+            <h3 id="modal-title">Thêm mới</h3>
+          </div>
+          <button class="icon-button" id="modal-close" value="cancel" type="button">×</button>
+        </div>
+        <div class="form-grid" id="modal-fields"></div>
+        <div class="modal-actions">
+          <button class="ghost-button" id="cancel-modal" type="button">Hủy</button>
+          <button class="primary-button" type="submit">Lưu</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+    <script src="/js/admin.js" defer></script>
+  </body>
+</html>

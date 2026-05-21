@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký lịch thực hành giảng viên</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <section class="login-screen" id="login-screen">
+      <div class="login-card">
+        <div class="brand login-brand">
+          <div class="brand-mark">PT</div>
+          <div>
+            <p class="brand-label">Cổng thông tin khoa</p>
+            <h1>Đăng nhập giảng viên</h1>
+          </div>
+        </div>
+
+        <p class="login-copy">
+          Đăng nhập bằng tài khoản giảng viên để đăng ký, quản lý và in lịch thực hành của mình.
+        </p>
+
+        <form class="login-form" id="login-form">
+          <label>
+            Email giảng viên
+            <input name="email" type="email" value="hung.nq@ptit.edu.vn" required />
+          </label>
+
+          <label>
+            Mật khẩu
+            <input name="password" type="password" value="ptit123" required />
+          </label>
+
+          <button class="primary-button" type="submit">Đăng nhập</button>
+        </form>
+
+        <p class="message-box" id="login-message" aria-live="polite"></p>
+        <p class="demo-account">Tài khoản mẫu: bất kỳ email giảng viên trong dữ liệu, mật khẩu mặc định <strong>ptit123</strong>.</p>
+      </div>
+    </section>
+
+    <div class="app-shell hidden" id="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">PT</div>
+          <div>
+            <p class="brand-label">Cổng thông tin khoa</p>
+            <h1>Đăng ký lịch thực hành</h1>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <a class="menu-item active" href="#dashboard">Thời khóa biểu dạng tuần</a>
+          <a class="menu-item" href="#booking-form">Đăng ký lịch thực hành</a>
+          <a class="menu-item" href="#booking-list">Danh sách lịch đã đăng ký</a>
+          <a class="menu-item" href="#guide">Hướng dẫn sử dụng</a>
+        </nav>
+
+        <section class="sidebar-card" id="guide">
+          <p class="sidebar-card-label">Hướng dẫn nhanh</p>
+          <ul>
+            <li>Đăng nhập bằng tài khoản giảng viên trước khi đăng ký lịch.</li>
+            <li>Hệ thống tự động gán lịch mới cho giảng viên đang đăng nhập.</li>
+            <li>Có thể in lịch hoặc chọn Lưu thành PDF từ hộp thoại in.</li>
+          </ul>
+        </section>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Hệ thống quản lý thực hành</p>
+            <h2>Lịch thực hành cho giảng viên</h2>
+          </div>
+
+          <div class="profile-pill">
+            <span class="profile-avatar" id="profile-avatar">GV</span>
+            <div>
+              <strong id="profile-name">Giảng viên</strong>
+              <p id="profile-department">Quản lý lịch thực hành</p>
+            </div>
+            <button class="logout-button" id="logout-button" type="button">Đăng xuất</button>
+          </div>
+        </header>
+
+        <section class="panel filters-panel" id="dashboard">
+          <div class="filters-header">
+            <div>
+              <p class="section-tag">Thời khóa biểu dạng tuần</p>
+              <h3>Quan sát lịch theo từng giảng viên và theo tuần</h3>
+            </div>
+            <div class="week-actions">
+              <button id="prev-week" class="ghost-button" type="button">Tuần trước</button>
+              <button id="next-week" class="ghost-button" type="button">Tuần sau</button>
+              <button id="print-week" class="ghost-button" type="button">In lịch</button>
+              <button id="export-pdf" class="ghost-button" type="button">Xuất PDF</button>
+            </div>
+          </div>
+
+          <div class="filters-grid">
+            <label>
+              Học kỳ
+              <select id="semester-select">
+                <option value="hk2-2025-2026">Học kỳ 2 - Năm học 2025 - 2026</option>
+              </select>
+            </label>
+
+            <label>
+              Giảng viên
+              <select id="teacher-filter">
+                <option value="">Tất cả giảng viên</option>
+              </select>
+            </label>
+
+            <label>
+              Tuần bắt đầu
+              <input id="week-start-input" type="date" />
+            </label>
+          </div>
+
+          <div class="summary-cards" id="summary-cards"></div>
+        </section>
+
+        <section class="panel schedule-panel">
+          <div class="schedule-panel-header">
+            <div>
+              <p class="section-tag">Mẫu giao diện theo lịch tuần</p>
+              <h3 id="week-title">Đang tải dữ liệu...</h3>
+            </div>
+            <p class="legend">
+              <span class="legend-chip">Xanh nhạt: đã đăng ký</span>
+              <span class="legend-chip accent">Đỏ đậm: khung giờ</span>
+            </p>
+          </div>
+
+          <div class="schedule-wrapper">
+            <div class="schedule-grid" id="schedule-grid"></div>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <section class="panel booking-panel" id="booking-form">
+            <div class="panel-heading">
+              <div>
+                <p class="section-tag">Tạo lịch mới</p>
+                <h3>Đăng ký lịch thực hành</h3>
+              </div>
+              <p class="panel-note">Lịch mới sẽ hiện ngay trong bảng tuần sau khi lưu.</p>
+            </div>
+
+            <form id="booking-form-element" class="booking-form">
+              <label>
+                Giảng viên
+                <select name="teacherId" id="teacher-select" required></select>
+                <span class="field-hint">Lịch mới sẽ được gán theo tài khoản đang đăng nhập.</span>
+              </label>
+
+              <label>
+                Mã môn
+                <input name="subjectCode" placeholder="INT1434" required />
+              </label>
+
+              <label>
+                Tên môn học
+                <input name="subjectName" placeholder="Lập trình Web" required />
+              </label>
+
+              <label>
+                Nhóm thực hành
+                <input name="classGroup" placeholder="Nhóm 98" required />
+              </label>
+
+              <label>
+                Phòng máy
+                <select name="room" id="room-select" required></select>
+              </label>
+
+              <label>
+                Ngày học
+                <input name="date" id="booking-date" type="date" required />
+              </label>
+
+              <div class="time-row">
+                <label>
+                  Bắt đầu
+                  <input name="startTime" type="time" min="07:00" max="18:00" required />
+                </label>
+
+                <label>
+                  Kết thúc
+                  <input name="endTime" type="time" min="07:30" max="19:00" required />
+                </label>
+              </div>
+
+              <label>
+                Nội dung thực hành
+                <input name="practiceTopic" placeholder="Thực hành REST API, SQL..." required />
+              </label>
+
+              <label>
+                Ghi chú
+                <textarea name="note" rows="4" placeholder="Thông tin bổ sung cho phòng đào tạo"></textarea>
+              </label>
+
+              <button class="primary-button" type="submit">Lưu lịch thực hành</button>
+            </form>
+
+            <p class="message-box" id="form-message" aria-live="polite"></p>
+          </section>
+
+          <section class="panel list-panel" id="booking-list">
+            <div class="panel-heading">
+              <div>
+                <p class="section-tag">Tổng hợp tuần</p>
+                <h3>Danh sách lịch đã đăng ký</h3>
+              </div>
+              <p class="panel-note">Bạn có thể xóa nhanh nếu lịch bị nhập nhầm.</p>
+            </div>
+
+            <div class="booking-list" id="booking-list-container"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="/js/app.js" defer></script>
+  </body>
+</html>

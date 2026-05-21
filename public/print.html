@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>In lịch thực hành</title>
+    <link rel="stylesheet" href="/css/print.css" />
+  </head>
+  <body>
+    <main class="print-page">
+      <header class="print-header">
+        <div>
+          <p class="print-eyebrow">Cổng thông tin quản lý lịch thực hành</p>
+          <h1 id="print-title">Đang tải lịch...</h1>
+          <p id="print-subtitle" class="print-subtitle"></p>
+        </div>
+        <div class="print-actions no-print">
+          <button id="print-now" type="button">In ngay</button>
+          <button id="close-window" type="button">Đóng</button>
+        </div>
+      </header>
+
+      <section class="print-note no-print" id="print-note">
+        Bạn có thể chọn máy in hoặc chọn <strong>Lưu thành PDF</strong> trong hộp thoại in.
+      </section>
+
+      <section class="summary-strip" id="summary-strip"></section>
+      <section class="print-grid" id="print-grid"></section>
+      <section class="print-list" id="print-list"></section>
+    </main>
+
+    <script src="/js/print.js" defer></script>
+  </body>
+</html>
