@@ -44,3 +44,5 @@ Truy cập:
 | Browser login UI | ✅ Form hiển thị, đăng nhập thành công |
 | Admin dashboard | ✅ Stats + charts + recent bookings |
 | DB auto-create | ✅ `data/scheduler.db` tự tạo |
+
+chạy trên máy trường bằng lệnh: php -S localhost:8080 router.php
