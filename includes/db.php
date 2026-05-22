@@ -1,10 +1,22 @@
 <?php
 /**
- * db.php — Kết nối PDO SQLite, khởi tạo schema, seed dữ liệu mẫu.
+ * db.php — Kết nối PDO SQLite hoặc MySQL, khởi tạo schema, seed dữ liệu mẫu.
  */
 
 require_once __DIR__ . '/helpers.php';
 
+// ─── Cấu hình Database ──────────────────────────────────
+// Chọn kiểu CSDL: 'sqlite' hoặc 'mysql'
+define('DB_TYPE', 'sqlite'); // Đổi thành 'mysql' để chạy với MySQL / phpMyAdmin
+
+// Cấu hình MySQL (chỉ dùng khi DB_TYPE là 'mysql')
+define('DB_HOST', 'localhost');
+define('DB_PORT', '3306');
+define('DB_NAME', 'scheduler');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
+// Cấu hình SQLite (chỉ dùng khi DB_TYPE là 'sqlite')
 define('DATA_DIR', __DIR__ . '/../data');
 define('DB_PATH', DATA_DIR . '/scheduler.db');
 define('DEFAULT_PASSWORD', 'ptit123');
@@ -16,15 +28,23 @@ function getDB(): PDO
 {
     static $pdo = null;
     if ($pdo === null) {
-        if (!is_dir(DATA_DIR)) {
-            mkdir(DATA_DIR, 0755, true);
+        if (DB_TYPE === 'mysql') {
+            $dsn = 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+            $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+        } else {
+            if (!is_dir(DATA_DIR)) {
+                mkdir(DATA_DIR, 0755, true);
+            }
+            $pdo = new PDO('sqlite:' . DB_PATH, null, null, [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+            $pdo->exec('PRAGMA foreign_keys = ON');
+            $pdo->exec('PRAGMA journal_mode = WAL');
         }
-        $pdo = new PDO('sqlite:' . DB_PATH, null, null, [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
-        $pdo->exec('PRAGMA foreign_keys = ON');
-        $pdo->exec('PRAGMA journal_mode = WAL');
     }
     return $pdo;
 }
@@ -49,56 +69,109 @@ function initializeDatabase(): void
 
 function ensureSchema(PDO $db): void
 {
-    $db->exec("
-        CREATE TABLE IF NOT EXISTS teachers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            full_name TEXT NOT NULL,
-            department TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            phone TEXT NOT NULL,
-            password_hash TEXT DEFAULT '',
-            is_admin INTEGER NOT NULL DEFAULT 0
-        );
+    if (DB_TYPE === 'mysql') {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS teachers (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                full_name VARCHAR(255) NOT NULL,
+                department VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                phone VARCHAR(50) NOT NULL,
+                password_hash VARCHAR(255) DEFAULT '',
+                is_admin TINYINT NOT NULL DEFAULT 0
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-        CREATE TABLE IF NOT EXISTS rooms (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL UNIQUE,
-            capacity INTEGER NOT NULL DEFAULT 40,
-            status TEXT NOT NULL DEFAULT 'available'
-        );
+            CREATE TABLE IF NOT EXISTS rooms (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL UNIQUE,
+                capacity INT NOT NULL DEFAULT 40,
+                status VARCHAR(50) NOT NULL DEFAULT 'available'
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-        CREATE TABLE IF NOT EXISTS subjects (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            code TEXT NOT NULL UNIQUE,
-            name TEXT NOT NULL
-        );
+            CREATE TABLE IF NOT EXISTS subjects (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                code VARCHAR(50) NOT NULL UNIQUE,
+                name VARCHAR(255) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-        CREATE TABLE IF NOT EXISTS students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            student_code TEXT NOT NULL UNIQUE,
-            full_name TEXT NOT NULL,
-            email TEXT NOT NULL,
-            class_name TEXT NOT NULL,
-            status TEXT NOT NULL DEFAULT 'active'
-        );
+            CREATE TABLE IF NOT EXISTS students (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                student_code VARCHAR(50) NOT NULL UNIQUE,
+                full_name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                class_name VARCHAR(100) NOT NULL,
+                status VARCHAR(50) NOT NULL DEFAULT 'active'
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-        CREATE TABLE IF NOT EXISTS bookings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            teacher_id INTEGER NOT NULL,
-            subject_code TEXT NOT NULL,
-            subject_name TEXT NOT NULL,
-            class_group TEXT NOT NULL,
-            room TEXT NOT NULL,
-            practice_topic TEXT NOT NULL,
-            week_start TEXT NOT NULL,
-            date TEXT NOT NULL,
-            start_time TEXT NOT NULL,
-            end_time TEXT NOT NULL,
-            note TEXT DEFAULT '',
-            created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
-            FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
-        );
-    ");
+            CREATE TABLE IF NOT EXISTS bookings (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                teacher_id INT NOT NULL,
+                subject_code VARCHAR(50) NOT NULL,
+                subject_name VARCHAR(255) NOT NULL,
+                class_group VARCHAR(100) NOT NULL,
+                room VARCHAR(255) NOT NULL,
+                practice_topic VARCHAR(255) NOT NULL,
+                week_start VARCHAR(50) NOT NULL,
+                date VARCHAR(50) NOT NULL,
+                start_time VARCHAR(10) NOT NULL,
+                end_time VARCHAR(10) NOT NULL,
+                note TEXT DEFAULT NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ");
+    } else {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS teachers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                full_name TEXT NOT NULL,
+                department TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE,
+                phone TEXT NOT NULL,
+                password_hash TEXT DEFAULT '',
+                is_admin INTEGER NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS rooms (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                capacity INTEGER NOT NULL DEFAULT 40,
+                status TEXT NOT NULL DEFAULT 'available'
+            );
+
+            CREATE TABLE IF NOT EXISTS subjects (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT NOT NULL UNIQUE,
+                name TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS students (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                student_code TEXT NOT NULL UNIQUE,
+                full_name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                class_name TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'active'
+            );
+
+            CREATE TABLE IF NOT EXISTS bookings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                teacher_id INTEGER NOT NULL,
+                subject_code TEXT NOT NULL,
+                subject_name TEXT NOT NULL,
+                class_group TEXT NOT NULL,
+                room TEXT NOT NULL,
+                practice_topic TEXT NOT NULL,
+                week_start TEXT NOT NULL,
+                date TEXT NOT NULL,
+                start_time TEXT NOT NULL,
+                end_time TEXT NOT NULL,
+                note TEXT DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+                FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
+            );
+        ");
+    }
 }
 
 // ─── Seed functions ──────────────────────────────────────
@@ -154,7 +227,10 @@ function seedRooms(PDO $db): void
         ['Phòng Lab B1-305', 50, 'maintenance'],
         ['Phòng Lab C2-402', 42, 'available'],
     ];
-    $stmt = $db->prepare('INSERT OR IGNORE INTO rooms (name, capacity, status) VALUES (?, ?, ?)');
+    $sql = (DB_TYPE === 'mysql')
+        ? 'INSERT IGNORE INTO rooms (name, capacity, status) VALUES (?, ?, ?)'
+        : 'INSERT OR IGNORE INTO rooms (name, capacity, status) VALUES (?, ?, ?)';
+    $stmt = $db->prepare($sql);
     foreach ($rooms as $r) {
         $stmt->execute($r);
     }
@@ -169,7 +245,10 @@ function seedSubjects(PDO $db): void
         ['INT1340', 'Nhập môn công nghệ phần mềm'],
         ['INT1339', 'Ngôn ngữ lập trình C++'],
     ];
-    $stmt = $db->prepare('INSERT OR IGNORE INTO subjects (code, name) VALUES (?, ?)');
+    $sql = (DB_TYPE === 'mysql')
+        ? 'INSERT IGNORE INTO subjects (code, name) VALUES (?, ?)'
+        : 'INSERT OR IGNORE INTO subjects (code, name) VALUES (?, ?)';
+    $stmt = $db->prepare($sql);
     foreach ($subjects as $s) {
         $stmt->execute($s);
     }

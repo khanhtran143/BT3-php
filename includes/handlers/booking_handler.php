@@ -74,8 +74,13 @@ function getBookingById(int $bookingId): ?array
 
 function insertSubjectIfMissing(string $code, string $name): void
 {
-    getDB()->prepare("INSERT INTO subjects (code, name) VALUES (?, ?) ON CONFLICT(code) DO UPDATE SET name = excluded.name")
-        ->execute([trim($code), trim($name)]);
+    if (defined('DB_TYPE') && DB_TYPE === 'mysql') {
+        getDB()->prepare("INSERT INTO subjects (code, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name)")
+            ->execute([trim($code), trim($name)]);
+    } else {
+        getDB()->prepare("INSERT INTO subjects (code, name) VALUES (?, ?) ON CONFLICT(code) DO UPDATE SET name = excluded.name")
+            ->execute([trim($code), trim($name)]);
+    }
 }
 
 function doCreateBooking(array $payload): array

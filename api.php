@@ -148,8 +148,8 @@ try {
 } catch (AppException $e) {
     sendJson($e->statusCode, ['error' => $e->getMessage()]);
 } catch (PDOException $e) {
-    // Handle SQLite UNIQUE constraint violations nicely
-    if (str_contains($e->getMessage(), 'UNIQUE constraint failed')) {
+    // Handle SQLite and MySQL UNIQUE/Duplicate constraint violations nicely
+    if (str_contains($e->getMessage(), 'UNIQUE constraint failed') || str_contains($e->getMessage(), 'Duplicate entry') || $e->getCode() == '23000') {
         sendJson(409, ['error' => 'Dữ liệu đã tồn tại (trùng lặp).']);
     }
     sendJson(500, ['error' => 'Lỗi cơ sở dữ liệu: ' . $e->getMessage()]);
